@@ -2,7 +2,7 @@
 
 This repository implements a physics-informed differentiable learning framework for Reduced-Order Modeling (ROM) of hyperbolic partial differential equations (PDEs), specifically benchmarked on the parameterized 1D Inviscid Burgers' equation (N-Wave initial condition). 
 
-By coupling a PyTorch neural network with a high-order Discontinuous Galerkin (DG) solver implemented in Julia (`Trixi.jl`) via the **Tesseract** framework, this project computes exact analytical Vector-Jacobian Products (VJPs) to prevent tangent space collapse and ensure long-term physical stability.
+By coupling a PyTorch neural network with a high-order Discontinuous Galerkin (DG) solver implemented in Julia (`Trixi.jl`) via the **Tesseract** framework, this project computes analytical Vector-Jacobian Products (VJPs) to  ensure long-term physical stability and prevent tangent space collapse by regularizing the jacoabians.
 
 ## 📂 Repository Structure
 
