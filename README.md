@@ -28,6 +28,6 @@ The high-level methodology, geometric manifold properties, and quantitative benc
 
 ## 🎥 Online Simulation Visualization
 
-Below is a dynamic visualization comparing the Full-Order Model (FOM) ground truth against the real-time $\Phi$-ROM online predictions, alongside the tracking of the relative error over time:
+Below is a dynamic visualization comparing the Full-Order Model (FOM) ground truth against the real-time ROM online predictions, alongside the tracking of the relative error over time:
 
 ![N-Wave Online Animation](nwave_animation.gif)
