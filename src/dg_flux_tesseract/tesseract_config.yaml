@@ -1,0 +1,64 @@
+name: "dg_flux"
+version: "1.0.0"
+description: >
+  High-order DG flux F(u) for periodic smooth Burgers equation.
+  Julia HTTP server (no juliacall, no juliaup shim).
+  K/polydeg are supplied by the Tesseract request.
+
+build_config:
+  package_data:
+    - ["burgers_dg.jl",     "/app/burgers_dg.jl"]
+    - ["burgers_server.jl", "/app/burgers_server.jl"]
+    # Run before building:
+    # cp dg/config.toml dg/dg_flux_tesseract/config.toml
+    - ["config.toml",       "/tesseract/config.toml"]
+
+  custom_build_steps:
+    - |
+      # ── System dependencies ─────────────────────────────────────────
+      RUN apt-get update && apt-get install -y \
+          --no-install-recommends \
+          curl ca-certificates tar \
+          && rm -rf /var/lib/apt/lists/*
+
+      # ── Julia 1.11.9 — direct install ───────────────────────────────
+      RUN curl -fsSL \
+          "https://julialang-s3.julialang.org/bin/linux/x64/1.11/julia-1.11.9-linux-x86_64.tar.gz" \
+          -o /tmp/julia.tar.gz && \
+          tar -xzf /tmp/julia.tar.gz -C /opt/ && \
+          rm /tmp/julia.tar.gz && \
+          ln -sf /opt/julia-1.11.9/bin/julia /usr/local/bin/julia && \
+          julia --version
+
+      # ── Julia package depot ─────────────────────────────────────────
+      ENV JULIA_DEPOT_PATH="/opt/julia_depot"
+
+      RUN mkdir -p /opt/julia_depot && \
+          chmod 777 /opt/julia_depot
+
+      # ── Julia dependencies ──────────────────────────────────────────
+      RUN julia --project=/app -e '\
+          using Pkg; \
+          Pkg.add(["Trixi", "OrdinaryDiffEq", "StaticArrays", \
+                   "TrixiBase", "HTTP", "JSON3", "MsgPack"]); \
+          Pkg.precompile()'
+
+      # ── Make depot readable at runtime ──────────────────────────────
+      RUN chmod -R 755 /opt/julia_depot
+
+      # ── JIT warmup ──────────────────────────────────────────────────
+      RUN julia -t auto --project=/app -e '\
+        include("/app/burgers_dg.jl"); \
+        for (K, p) in [(4, 2), (4, 3)]; \
+            n = K * (p + 1); \
+            x = collect(1:n) ./ n; \
+            u = 1.0 .+ \
+                0.20 .* sin.(2.0*pi .* x) .+ \
+                0.08 .* cos.(6.0*pi .* x) .+ \
+                0.025 .* sin.(17.0*pi .* x); \
+            v = cos.(5.0*pi .* x) .+ \
+                0.4 .* sin.(11.0*pi .* x); \
+            eval_rhs_clone(u, 0.0, 0.0, K, p); \
+            eval_rhs_vjp(u, v, 0.0, 0.0, K, p); \
+        end; \
+        println("Julia precompile done")'

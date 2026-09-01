@@ -1,0 +1,23 @@
+# config.toml
+# ──────────────────────────────────────────────────────────────────────────
+# Single source of truth for mesh parameters.
+# Read by:
+#   Julia  : fom/generate_data.jl   (TOML.parsefile)
+#   Python : train_burgers.ipynb    (dataset.K / dataset.polydeg from HDF5)
+#
+# After changing K or polydeg here, re-run:
+#   1.  julia --project=. fom/generate_data.jl      (regenerate FOM data)
+#   2.  tesseract build dg_flux_tesseract/           (rebuild Julia container)
+#   3.  Re-train model
+# ──────────────────────────────────────────────────────────────────────────
+
+[fom]
+K       = 100       # number of DG elements
+polydeg = 3       # polynomial degree  (Nx = K*(polydeg+1) nodes)
+T       = 0.25      # final time
+cfl     = 0.5      # CFL number for time integration
+n1      = 50       # μ₁ grid points  (IC amplitude)
+n2      = 1       # μ₂ grid points  (left BC value)
+
+[rom]
+q_dim   = 6        # latent dimension  (used as default in notebook)
