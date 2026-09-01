@@ -23,7 +23,8 @@ Below is an overview of the core files and directories included in this reposito
 
 The high-level methodology, geometric manifold properties, and quantitative benchmarks are summarized below:
 
-![Project Report Summary](image_9ab16f.png)
+![Project Report Summary](fig1.png)
+![Project Report Summary](rom_pipeline.png)
 
 ## 🎥 Online Simulation Visualization
 
